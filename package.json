@@ -5,12 +5,14 @@
   "main": "index.js",
   "scripts": {
     "test": "npx mocha test/",
-    "testmon": "nodemon -w src -w test --exec 'npx mocha test/ || exit 1'"
+    "testmon": "npx nodemon -w src -w test --exec 'npx mocha test/ || exit 1'",
+    "dev": "npx nodemon -e js -w src --exec 'node src/index.js'"
   },
   "author": "Hamid Zare",
   "license": "ISC",
   "devDependencies": {
-    "mocha": "^5.2.0"
+    "mocha": "^5.2.0",
+    "nodemon": "^1.18.4"
   },
   "dependencies": {
     "bitwise-rotation": "^1.0.1"
