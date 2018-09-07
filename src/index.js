@@ -1,8 +1,11 @@
 const { dec2Bin, printBinary, ensureNBits, asciiToBits, chopString, binaryToAsciiChar } = require('./utils');
 const Speck = require('./speck/lib');
 
-
-// fiestel block encryption helper
+/*
+* fiestel block encryption helper
+* relies heavily on javascripts charCodeAt and fromCharCode.
+* assumes 8bit ascii alphabet
+*/
 class BlockCipher {
   /*
   * @param {Number} n word size in bits
@@ -40,6 +43,7 @@ class BlockCipher {
   */
   _encrypt(words, rKeys) {
     // override
+    throw new Error('not implemented');
   }
 
   /*
@@ -48,6 +52,49 @@ class BlockCipher {
   */
   _decrypt(words, rKeys) {
     // override
+    throw new Error('not implemented');
+  }
+
+  /*
+  * converts text to word sized integer blocks
+  * @param {string} text ascii text to encrypt (8bit encoded)
+  */
+  _textToNumericBlocks(text) {
+    // prepare the text
+    let bits = asciiToBits(text);
+    // console.log(bits);
+    let inputWords = chopString(bits, this.n)
+      .map(word => parseInt(word, 2));
+    // console.log('input words', inputWords);
+
+    // account for odd number of words
+    if (inputWords.length % 2 !== 0) inputWords.push(0);
+
+    // encrypt each block and gather the results
+    let blocks = []
+    while (inputWords.length) {
+      blocks.push([inputWords.shift(), inputWords.shift()]);
+    }
+    return blocks;
+  }
+
+  /*
+  * converts word sized integer blocks to text
+  * @param {Array<Number>} encWords converts a list of word integers into text
+  */
+  _numericBlocksToText(intWords) {
+    // ensure each word is alphabet size
+    let bitsStr =  intWords
+      .map(w => dec2Bin(w)) // convert to bin string repr
+      .map(w => ensureNBits(w, this.n))
+      .join('');
+    // console.log(bitsStr);
+
+    // convert it back to ascii
+    console.assert(bitsStr.length % this.ALPHABET_SIZE === 0);
+    return chopString(bitsStr, this.ALPHABET_SIZE)
+      .map(binaryChar => binaryToAsciiChar(binaryChar))
+      .join('');
   }
 
   /*
@@ -59,38 +106,16 @@ class BlockCipher {
 
     // prepare the round keys
     let roundKeys = this._expandKey(keyWords);
+    // console.log(roundKeys);
 
-    // prepare the text
-    // TODO chop up and pad the text if necessary
-    let bits = asciiToBits(text);
-    // console.log(bits);
-    let inputWords = chopString(bits, this.n)
-      .map(word => parseInt(word, 2));
-    console.log('input words', inputWords);
-
-    // account for odd number of words
-    if (inputWords.length % 2 !== 0) inputWords.push(0);
-
-    // encrypt each block and gather the results
     let encWords = [];
-    while (inputWords.length) {
-      let block = [inputWords.shift(), inputWords.shift()];
+    let blocks = this._textToNumericBlocks(text);
+    blocks.forEach(block => {
        encWords.push(...this._encrypt(block, roundKeys));
-    }
-    console.log('enc words', encWords);
+    })
+    // console.log('enc words', encWords);
 
-    // ensure each word is alphabet size
-    let encryptedBits =  encWords
-      .map(w => dec2Bin(w)) // convert to bin string repr
-      .map(w => ensureNBits(w, this.n))
-      .join('');
-    // console.log(encryptedBits);
-
-    // convert it back to ascii
-    console.assert(encryptedBits.length % this.ALPHABET_SIZE === 0);
-    return chopString(encryptedBits, this.ALPHABET_SIZE)
-      .map(binaryChar => binaryToAsciiChar(binaryChar))
-      .join('');
+    return this._numericBlocksToText(encWords);
   }
 
   /*
@@ -100,6 +125,18 @@ class BlockCipher {
   decryptAscii(text, keyWords) {
     if (text === undefined) throw new Error('bad input');
 
+    // prepare the round keys
+    let roundKeys = this._expandKey(keyWords);
+    // console.log(roundKeys);
+
+    let encWords = [];
+    let blocks = this._textToNumericBlocks(text);
+    blocks.forEach(block => {
+       encWords.push(...this._decrypt(block, roundKeys));
+    })
+    // console.log('enc words', encWords);
+
+    return this._numericBlocksToText(encWords);
   }
 }
 
