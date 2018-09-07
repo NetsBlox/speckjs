@@ -1,5 +1,4 @@
 const { dec2Bin, printBinary, ensureNBits, asciiToBits, chopString, binaryToAsciiChar } = require('./utils');
-const Speck = require('./speck/lib');
 
 /*
 * fiestel block encryption helper
@@ -140,28 +139,4 @@ class BlockCipher {
   }
 }
 
-
-
-function words(s) {
-  return s.split(/\s+/).map(function (x) { return parseInt(x, 16) | 0 })
-}
-
-const s32 = {
-  Key: '1918 1110 0908 0100',
-  Plaintext: '6574 694c',
-  // Plaintext: '20796c 6c6172',
-  Ciphertext: 'a868 42f2'
-};
-
-
-
-// console.log('plain text (int):', words(s32.Plaintext));
-
-// let enc = speck32.encrypt(s32.Plaintext.split(' ')[0], s32.Plaintext.split(' ')[1], s32.Key);
-// console.log('enc', enc);
-// console.log(enc.map(n => n.toString(16)));
-
-// words(s32.Plaintext).forEach(w => {
-//   console.log(w.toString(2).length);
-//   console.log(w.toString(2));
-// })
+module.exports = BlockCipher;
