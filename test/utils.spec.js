@@ -91,13 +91,13 @@ describe('utils', function() {
   describe('binary', function() {
 
     it('should convert ascii char to padded binary', function() {
-      const expected = '0100000';
+      const expected = '00100000';
       let str = utils.asciiCharToBinary(' ')
       assert.deepEqual(str, expected);
     })
 
     it('should convert message to binary', function() {
-      const expected = '1110011110010111101000100000';
+      const expected = '01110011011001010111010000100000';
       let str = utils.asciiToBits('set ');
       assert.deepEqual(str, expected);
     })

@@ -10,7 +10,7 @@ let dec2Bin = dec => {
 
 // padded string repr of num
 let asciiCharToBinary =  c => {
-  const ASCII_SIZE = 7;
+  const ASCII_SIZE = 8;
   let decNum = c.charCodeAt(0);
   let numStr = dec2Bin(decNum);
   diff = ASCII_SIZE - numStr.length;
