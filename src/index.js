@@ -1,9 +1,9 @@
-const { printBinary, mod, lcs, rcs, asciiToBits, chopString } = require('./utils');
+const { dec2Bin, printBinary, ensureNBits, asciiToBits, chopString, binaryToAsciiChar } = require('./utils');
 const Speck = require('./speck/lib');
 
 
 // fiestel block encryption helper
-class BlockEnc {
+class BlockCipher {
   /*
   * @param {Number} n word size in bits
   * @param {Number} m number of keywords
@@ -15,6 +15,7 @@ class BlockEnc {
     this.n = n;
     this.MAX_KEY = Math.pow(2, m * n);
     this.MAX_WORD = Math.pow(2, n);
+    this.ALPHABET_SIZE = 8;
   }
 
   _checkKeyWords(keyWords) {
@@ -28,7 +29,7 @@ class BlockEnc {
   * @param {Array<Number>} keyWords a list of key words containing numbers up to word size
   * @returns {Array<Number>} round keys: a list of round keys
   */
-  _expandKeys(keyWords) {
+  _expandKey(keyWords) {
     this._checkKeyWords(keyWords);
     // override
   }
@@ -55,7 +56,41 @@ class BlockEnc {
   */
   encryptAscii(text, keyWords) {
     if (text === undefined) throw new Error('bad input');
-    let roundKeyds = this._expandKeys(keyWords);
+
+    // prepare the round keys
+    let roundKeys = this._expandKey(keyWords);
+
+    // prepare the text
+    // TODO chop up and pad the text if necessary
+    let bits = asciiToBits(text);
+    // console.log(bits);
+    let inputWords = chopString(bits, this.n)
+      .map(word => parseInt(word, 2));
+    console.log('input words', inputWords);
+
+    // account for odd number of words
+    if (inputWords.length % 2 !== 0) inputWords.push(0);
+
+    // encrypt each block and gather the results
+    let encWords = [];
+    while (inputWords.length) {
+      let block = [inputWords.shift(), inputWords.shift()];
+       encWords.push(...this._encrypt(block, roundKeys));
+    }
+    console.log('enc words', encWords);
+
+    // ensure each word is alphabet size
+    let encryptedBits =  encWords
+      .map(w => dec2Bin(w)) // convert to bin string repr
+      .map(w => ensureNBits(w, this.n))
+      .join('');
+    // console.log(encryptedBits);
+
+    // convert it back to ascii
+    console.assert(encryptedBits.length % this.ALPHABET_SIZE === 0);
+    return chopString(encryptedBits, this.ALPHABET_SIZE)
+      .map(binaryChar => binaryToAsciiChar(binaryChar))
+      .join('');
   }
 
   /*
