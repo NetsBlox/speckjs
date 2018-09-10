@@ -12,7 +12,7 @@ let dec2Bin = dec => {
 // ensure binary string is n bits
 let ensureNBits = (str, n) => {
   diff = n - str.length;
-  if (diff < 0) throw new Error(`input binary out of the defined alphabet range`);
+  if (diff < 0) throw new Error(`input binary out of the defined alphabet range ${str.length} vs ${n}`);
   console.assert(diff >= 0);
   if (diff > 0) {
     let pad = '';
@@ -42,13 +42,26 @@ let binaryToAsciiChar =  binaryStr => {
 
 let printBinary = int => {
   let str = int.toString(2);
-  console.log(str);
   return str;
 };
 
 let lcs = (xInt, nBits) => {
   if (nBits === undefined) throw new Error('missing input: number of bits to shift is required');
   let res = (xInt << nBits | xInt >>> JSINTLENGTH-nBits)
+  return res;
+};
+
+let lcsn = (xInt, nBits, unsignedBitCount) => {
+  if (nBits === undefined) throw new Error('missing input: number of bits to shift is required');
+  if (unsignedBitCount > 32 || unsignedBitCount < 1) throw new Error('bad number size')
+  let res = (xInt << nBits | xInt >>> unsignedBitCount-nBits) & unsignedBitCount
+  return res;
+};
+
+let rcsn = (xInt, nBits, unsignedBitCount) => {
+  if (nBits === undefined) throw new Error('missing input: number of bits to shift is required');
+  if (unsignedBitCount > 32 || unsignedBitCount < 1) throw new Error('bad number size')
+  let res = (xInt << unsignedBitCount-nBits | xInt >>> nBits) & Math.pow(2, unsignedBitCount)
   return res;
 };
 
@@ -78,11 +91,24 @@ let chopString = (str, blockSize) => {
  * x arbitrary integer
  * n natural number
  */
-const mod = (x, n) => (x % n + n) % n;
+const mod = (x, n) => ((x % n) + n) % n;
+// const mod = (x, n) => x & n;
+
+let moduloAdd = (a, b, base) => {
+  return mod((a + b), base);
+}
+
+let moduloSub = (a, b, base) => {
+  return mod((a - b), base);
+}
 
 module.exports = {
   lcs,
   rcs,
+  lcsn,
+  rcsn,
+  moduloAdd,
+  moduloSub,
   lcs16: rolInt16,
   rcs16: rorInt16,
   printBinary,

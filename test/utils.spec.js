@@ -3,16 +3,32 @@ const assert = require('assert'),
 
 describe('utils', function() {
 
-    it('chop should work on indivisible lengths', function() {
-      let res = utils.chopString('12345', 2);
-      let expected = ['12', '34', '5'];
-      assert.deepEqual(res, expected);
+  it('chop should work on indivisible lengths', function() {
+    let res = utils.chopString('12345', 2);
+    let expected = ['12', '34', '5'];
+    assert.deepEqual(res, expected);
 
-      res = utils.chopString('1234', 2);
-      expected = ['12', '34'];
-      assert.deepEqual(res, expected);
-    });
+    res = utils.chopString('1234', 2);
+    expected = ['12', '34'];
+    assert.deepEqual(res, expected);
+  });
 
+  it('mod function', function() {
+    assert.equal(utils.mod(10, 2), 0);
+    assert.equal(utils.mod(5, 2), 1);
+  })
+
+  it('modular addition', function() {
+    assert.equal(utils.moduloAdd(9, 5, 12), 2);
+    assert.equal(utils.moduloAdd(30, 8, 12), 2);
+    assert.equal(utils.moduloAdd(5, 4, 12), 9);
+  })
+
+  it('modular subtraction', function() {
+    assert.equal(utils.moduloSub(5, 4, 6), 1);
+    assert.equal(utils.moduloSub(4, 5, 6), 5);
+    assert.equal(utils.moduloSub(5, 7, 6), 4);
+  })
 
 
   describe('lcs', function() {
