@@ -1,30 +1,44 @@
 const { rolInt16, rorInt16 } = require('bitwise-rotation');
-// js int length for bitwise operations (in form of two's complement
 
+// js int length for bitwise operations (in form of two's complement)
 const JSINTLENGTH = 32;
+const ASCII_SIZE = 8;
 
 // WARN positive dec
 let dec2Bin = dec => {
   return (dec >>> 0).toString(2);
 }
 
-// padded string repr of num
-let asciiCharToBinary =  c => {
-  const ASCII_SIZE = 7;
-  let decNum = c.charCodeAt(0);
-  let numStr = dec2Bin(decNum);
-  diff = ASCII_SIZE - numStr.length;
-  if (diff < 0) throw new Error(`char ${char} out of the defined alphabet range`);
+// ensure binary string is n bits
+let ensureNBits = (str, n) => {
+  diff = n - str.length;
+  if (diff < 0) throw new Error(`input binary out of the defined alphabet range`);
   console.assert(diff >= 0);
   if (diff > 0) {
     let pad = '';
     for (let i=0; i < diff; i++) {
       pad += '0';
     }
-    numStr = pad + numStr;
+    str = pad + str;
   }
+  return str;
+};
+
+
+// padded string repr of num
+let asciiCharToBinary =  c => {
+  let decNum = c.charCodeAt(0); // CHECK UTF16 but also ASCII ?!
+  let numStr = dec2Bin(decNum);
+  numStr = ensureNBits(numStr, ASCII_SIZE);
   return numStr;
 };
+
+let binaryToAsciiChar =  binaryStr => {
+  if (binaryStr.length !== ASCII_SIZE) throw new Error(`input has to be ${ASCII_SIZE} bits`);
+  let c = String.fromCharCode(parseInt(binaryStr, 2));
+  return c;
+};
+
 
 let printBinary = int => {
   let str = int.toString(2);
@@ -74,6 +88,9 @@ module.exports = {
   printBinary,
   asciiToBits,
   asciiCharToBinary,
+  binaryToAsciiChar,
+  ensureNBits,
+  dec2Bin,
   chopString,
   mod,
 }
