@@ -3,7 +3,7 @@ const Speck = require('./speck/lib'),
 
 class Speck32 extends BlockCipher {
   constructor() {
-    super(16, 4);
+    super(16, 4, 22);
     this.lib = Speck['32/64'];
   }
 

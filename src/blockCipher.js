@@ -10,11 +10,12 @@ class BlockCipher {
   * @param {Number} n word size in bits
   * @param {Number} m number of keywords
   */
-  constructor(n, m) {
-    if (!n || !m) throw new Error('missing initialization parameters');
+  constructor(n, m, numRounds) {
+    if (!n || !m || !numRounds) throw new Error('missing initialization parameters');
     console.log(`creating block cipher with block size: ${2*n} key size: ${m*n}`);
     this.m = m;
     this.n = n;
+    this.numRounds = numRounds;
     this.MAX_KEY = Math.pow(2, m * n);
     this.MAX_WORD = Math.pow(2, n);
     this.ALPHABET_SIZE = 8;
@@ -113,16 +114,17 @@ class BlockCipher {
     let encWords = [];
     let blocks = this._textToNumericBlocks(text);
     blocks.forEach(block => {
-       encWords.push(...this._encrypt(block, roundKeys));
+      const [encX, encY] = this._encrypt(block, roundKeys);
+      if (encX > this.MAX_WORD || encY > this.MAX_WORD) throw new Error('encryptiong returned too big a number');
+      encWords.push(encX, encY);
     })
-    // console.log('enc words', encWords);
 
     return this._numericBlocksToText(encWords);
   }
 
   /*
   * @param {string} text ascii text to encrypt (8bit encoded)
-  * @param {Array<Number>} keyWords a list of key words containing numbers up to word size
+  * @param {Array<Number>} keyWords a list of key words containing numbers each up to word size
   */
   decryptAscii(text, keyWords) {
     if (text === undefined) throw new Error('bad input');
@@ -134,7 +136,9 @@ class BlockCipher {
     let encWords = [];
     let blocks = this._textToNumericBlocks(text);
     blocks.forEach(block => {
-       encWords.push(...this._decrypt(block, roundKeys));
+      const [decX, decY] = this._decrypt(block, roundKeys);
+      if (decX > this.MAX_WORD || decY > this.MAX_WORD) throw new Error('encryptiong returned too big a number');
+      encWords.push(decX, decY);
     })
     // console.log('enc words', encWords);
 
