@@ -1,4 +1,4 @@
-const { printBinary, mod, lcs16, rcs16, asciiToBits, chopString } = require('../utils'),
+const { printBinary, mod, lcsn, rcsn, asciiToBits, chopString } = require('../utils'),
   BlockCipher = require('../blockCipher');
 
 class SpeckNative32 extends BlockCipher {
@@ -13,36 +13,15 @@ class SpeckNative32 extends BlockCipher {
     let rKeys = [];
     // build the initial L and K CHECK
     const m = this.m;
-    // l2, k2, l1, k1, l0, k0 = 4*16 bits
-    // QUESTION how should this assignmet be done?
+    const sixteenOnes = Math.pow(2,16) - 1;
 
-    // let l = new Array(m - 2 + 1).fill(null);
-    // let k = new Array(m - 2 + 1).fill(null);
-
-    // l[0] = k[0] = keyWords[3]
-
-
-    // for (let i=0; i<this.numRounds-1; i++) {
-    //   const moduloBase = Math.pow(2, this.n);
-    //   // calc l
-    //   let leftT = mod(k[i] + rcs16(l[i], this.alpha), moduloBase)
-    //   l[i+m-1] = leftT ^ i;
-
-    //   // calc k
-    //   leftT = lcs16(k[i], this.beta);
-    //   k[i+1] = leftT ^ l[i+m-1];
-    // }
-    // rKeys = k;
-
-
-    // credit: speck package
     let key = [...keyWords]; // shallow copy to dereference
     var k = key[3];
     for (var i = 0, j; i < this.numRounds; ++i) {
         rKeys[i] = k;
         j = 2 - i % 3;
-        key[j] = (key[j] << 9 | key[j] >>> 7) + k & 65535 ^ i;
-        k = (k << 2 | k >>> 14) & 65535 ^ key[j];
+        key[j] = rcsn(key[j], 7, 16) + k & sixteenOnes ^ i;
+        k = lcsn(k, 2, 16) ^ key[j];
     }
 
     return rKeys;
@@ -50,19 +29,19 @@ class SpeckNative32 extends BlockCipher {
 
   _round(x, y, rKey) {
     // calc x
-    let leftTerm = mod(rcs16(x, this.alpha) + y, Math.pow(2, this.n)); // modulo addition
+    let leftTerm = mod(rcsn(x, this.alpha, 16) + y, Math.pow(2, this.n)); // modulo addition
     // CHECK override x here?
     x = leftTerm ^ rKey;
-    y = lcs16(y, this.beta) ^ x;
+    y = lcsn(y, this.beta, 16) ^ x;
 
     return [x, y];
   }
 
   // inverse round
   _roundI(x, y, rKey) {
-    y = rcs16(x ^ y, this.beta);
+    y = rcsn(x ^ y, this.beta, 16);
     let leftT = mod((x ^ rKey) - y, Math.pow(2, this.n)); // modulo subtraction
-    x = lcs16(leftT, this.alpha);
+    x = lcsn(leftT, this.alpha, 16);
     return [x, y];
   }
 

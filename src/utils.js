@@ -1,5 +1,3 @@
-const { rolInt16, rorInt16 } = require('bitwise-rotation');
-
 // js int length for bitwise operations (in form of two's complement)
 const JSINTLENGTH = 32;
 const ASCII_SIZE = 8;
@@ -109,8 +107,8 @@ module.exports = {
   rcsn,
   moduloAdd,
   moduloSub,
-  lcs16: rolInt16,
-  rcs16: rorInt16,
+  lcs16: (xInt, nBits) => lcsn(xInt, nBits, 16),
+  rcs16: (xInt, nBits) => rcsn(xInt, nBits, 16),
   printBinary,
   asciiToBits,
   asciiCharToBinary,
