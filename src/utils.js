@@ -51,23 +51,23 @@ let lcs = (xInt, nBits) => {
   return res;
 };
 
+let rcs = (xInt, nBits) => {
+  if (nBits === undefined) throw new Error('missing input: number of bits to shift is required');
+  let res = (xInt << JSINTLENGTH-nBits | xInt >>> nBits)
+  return res;
+};
+
 let lcsn = (xInt, nBits, unsignedBitCount) => {
   if (nBits === undefined) throw new Error('missing input: number of bits to shift is required');
   if (unsignedBitCount > 32 || unsignedBitCount < 1) throw new Error('bad number size')
-  let res = (xInt << nBits | xInt >>> unsignedBitCount-nBits) & unsignedBitCount
+  let res = (xInt << nBits | xInt >>> unsignedBitCount-nBits) & (Math.pow(2, unsignedBitCount) - 1)
   return res;
 };
 
 let rcsn = (xInt, nBits, unsignedBitCount) => {
   if (nBits === undefined) throw new Error('missing input: number of bits to shift is required');
   if (unsignedBitCount > 32 || unsignedBitCount < 1) throw new Error('bad number size')
-  let res = (xInt << unsignedBitCount-nBits | xInt >>> nBits) & Math.pow(2, unsignedBitCount)
-  return res;
-};
-
-let rcs = (xInt, nBits) => {
-  if (nBits === undefined) throw new Error('missing input: number of bits to shift is required');
-  let res = (xInt << JSINTLENGTH-nBits | xInt >>> nBits)
+  let res = (xInt << unsignedBitCount-nBits | xInt >>> nBits) & (Math.pow(2, unsignedBitCount) - 1)
   return res;
 };
 
