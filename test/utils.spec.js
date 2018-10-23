@@ -1,6 +1,7 @@
 const assert = require('assert'),
   { rolInt16, rorInt16 } = require('bitwise-rotation'),
   utils = require('../src/utils');
+const ASCII_SIZE = 8;
 
 describe('utils', function() {
 
@@ -133,6 +134,13 @@ describe('utils', function() {
 
   describe('binary', function() {
 
+    const checkTwoWay = msg => {
+      let bits = utils.asciiToBits(msg);
+      let charBits = utils.chopString(bits, ASCII_SIZE)
+      let chars = charBits.map(utils.binaryToAsciiChar);
+      assert.deepEqual(chars.join(''), msg);
+    }
+
     it('should convert ascii char to padded binary', function() {
       const expected = '00100000';
       let str = utils.asciiCharToBinary(' ')
@@ -143,6 +151,17 @@ describe('utils', function() {
       const expected = '01110011011001010111010000100000';
       let str = utils.asciiToBits('set ');
       assert.deepEqual(str, expected);
+    })
+
+    it('should convert to binary and back', function() {
+      let randStr = () => Math.random().toString(36).substring(1);
+      const messages = ['holas', 'asdfzxc', '34 23sadf aqI',  'hdWEIRUk', 'xzcjkvliasufhdWEIRUkCnv234305@#$(9^)']
+      messages.forEach(plainMessage => {
+        checkTwoWay(plainMessage);
+      })
+      for (let i=0; i<100; i++) {
+        checkTwoWay(randStr());
+      }
     })
 
   })
