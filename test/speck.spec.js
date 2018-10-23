@@ -30,11 +30,15 @@ describe('ciphers', function() {
 
     describe('speck native', function() {
 
-      it('should encrypt two ways block sized texts', function() {
-        const plainMessage = 'hola';
+      let checkTwoWay = plainMessage => {
         let encMsg = sNative32.encryptAscii(plainMessage, keyWords);
         let decryptedMsg = sNative32.decryptAscii(encMsg, keyWords);
         assert.deepEqual(decryptedMsg, plainMessage);
+      }
+
+      it('should encrypt two ways block sized texts', function() {
+        const plainMessage = 'hola';
+        checkTwoWay(plainMessage);
       })
 
       it('should encrypt two ways odd sized texts', function() {
@@ -42,6 +46,22 @@ describe('ciphers', function() {
         let encMsg = sNative32.encryptAscii(plainMessage, keyWords);
         let decryptedMsg = sNative32.decryptAscii(encMsg, keyWords);
         assert.deepEqual(decryptedMsg, plainMessage);
+      })
+
+      it('should encrypt two ways odd sized texts', function() {
+        const plainMessage = 'hdWEIRUk';
+        checkTwoWay(plainMessage);
+      })
+
+      it('should be able to reverse encryption on random string', function() {
+        let randStr = () => Math.random().toString(36).substring(5);
+        const messages = ['holas', 'asdfzxc', '34 23sadf aqI',  'hdWEIRUk', 'xzcjkvliasufhdWEIRUkCnv234305@#$(9^)']
+        messages.forEach(plainMessage => {
+          checkTwoWay(plainMessage);
+        })
+        for (let i=0; i<1000; i++) {
+          checkTwoWay(randStr());
+        }
       })
     })
 
