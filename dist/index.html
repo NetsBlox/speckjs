@@ -6,10 +6,43 @@
     <title>Index</title>
   </head>
   <body>
+    <input type="text" value="" id="text"/>
+    <input type="text" value="1 2 3 4" id="keys"/>
+    <button onclick="encrypt()">Encrypt</button>
+    <button onclick="decrypt()">Decrypt</button>
+    <p id="output"></p>
     <script src="speck3264.js"></script>
     <script charset="utf-8">
       let Speck = require('speck3264');
-      console.log(Speck);
+      const s = new Speck();
+
+      function getKeys() {
+        return document.getElementById('keys').value
+        .split(' ')
+        .map(key => parseInt(key));
+      }
+
+      function getTextEl() {
+        return document.getElementById('text');
+      }
+
+      function encrypt() {
+        let rv = s.encryptAscii(getTextEl().value, getKeys());
+        console.log(rv);
+      }
+
+      function decrypt() {
+        let rv = s.decryptAscii(getTextEl().value, getKeys());
+        console.log(rv);
+        getTextEl().value = rv;
+      }
+
+      function encrypt() {
+        let rv = s.encryptAscii(getTextEl().value, getKeys());
+        console.log(rv);
+        getTextEl().value = rv;
+      }
+
     </script>
   </body>
 </html>

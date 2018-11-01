@@ -92,6 +92,7 @@ let chopString = (str, blockSize) => {
 const mod = (x, n) => ((x % n) + n) % n;
 // const mod = (x, n) => x & n;
 
+// (a+b) mod c = (a mod c + b mod c) mod c
 let moduloAdd = (a, b, base) => {
   return mod((a + b), base);
 }
