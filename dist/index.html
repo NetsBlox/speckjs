@@ -11,9 +11,11 @@
     <button onclick="encrypt()">Encrypt</button>
     <button onclick="decrypt()">Decrypt</button>
     <p id="output"></p>
-    <script src="speck3264.js"></script>
+    <script src="bundle.js"></script>
     <script charset="utf-8">
-      let Speck = require('speck3264');
+      const Speck = require('speck3264'),
+        utils = require('utils');
+
       const s = new Speck();
 
       function getKeys() {

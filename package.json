@@ -6,7 +6,7 @@
   "scripts": {
     "test": "npx mocha test/",
     "testmon": "npx nodemon -w src -w test --exec 'npx mocha test/ || exit 1'",
-    "build": "npx browserify -r ./src/ciphers/speckNative.js:speck3264 > dist/speck3264.js",
+    "build": "npx browserify -r ./src/ciphers/speckNative.js:speck3264 -r ./src/utils.js:utils > dist/bundle.js",
     "postinstall": "cd src/ciphers/speck; npm install; cd ../../; npm run build",
     "dev": "npx nodemon -e js -w src --exec 'node src/index.js'"
   },
