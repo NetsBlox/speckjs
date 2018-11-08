@@ -19,13 +19,22 @@
       const s = new Speck();
 
       function getKeys() {
-        return document.getElementById('keys').value
+        let keys =  document.getElementById('keys').value
         .split(' ')
         .map(key => parseInt(key));
+
+        // display generated round keys
+        getOutputEl().innerText = s._expandKey(keys).join(', ');
+
+        return keys;
       }
 
       function getTextEl() {
         return document.getElementById('text');
+      }
+
+      function getOutputEl() {
+        return document.getElementById('output');
       }
 
       function encrypt() {
