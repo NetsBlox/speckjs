@@ -13,11 +13,11 @@
   "author": "Hamid Zare",
   "license": "ISC",
   "devDependencies": {
-    "browserify": "^16.2.3"
-  },
-  "dependencies": {
-    "bitwise-rotation": "^1.0.1",
+    "browserify": "^16.2.3",
     "mocha": "^9.1.4",
     "nodemon": "^2.0.15"
+  },
+  "dependencies": {
+    "bitwise-rotation": "^1.0.1"
   }
 }
